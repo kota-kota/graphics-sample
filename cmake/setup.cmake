@@ -1,0 +1,72 @@
+# Require C++11
+enable_language(CXX)
+set(CMAKE_CXX_STANDARD 11)    # C++11
+set(CMAKE_CXX_STANDARD_REQUIRED ON)    # is required
+set(CMAKE_CXX_EXTENSIONS OFF)    # without compiler extensions like gnu++11
+
+set(LIBRARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/library)
+
+if(MSVC)
+  # Visual C (Windows)
+
+  if(CMAKE_C_FLAGS MATCHES "/W[0-4]")
+    string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+  else()
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W4")
+  endif()
+  if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
+    string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+  else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+  endif()
+
+  # Not create ZERO_CHECK project
+  set(CMAKE_SUPPRESS_REGENERATION true)
+  # Use the FOLDER target property
+  set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+  # Set build types
+  set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
+
+  # Set library path
+  set(LIBRARY_PLATFORM_DIR ${LIBRARY_DIR}/windows)
+  if (CMAKE_CL_64)
+    set(LIBRARY_PLATFORM_DIR ${LIBRARY_PLATFORM_DIR}/x64)
+  else()
+    set(LIBRARY_PLATFORM_DIR ${LIBRARY_PLATFORM_DIR}/x86)
+  endif()
+  set(LIBRARY_INCLUDE_DIR ${LIBRARY_PLATFORM_DIR}/include)
+  set(LIBRARY_LIB_DIR ${LIBRARY_PLATFORM_DIR}/lib)
+
+elseif(ANDROID)
+  # Android
+  set(LIB_INC_PATH ${LIB_PATH}/android/include)
+  if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
+    set(LIB_LINK_PATH ${LIB_PATH}/android/lib/x86_64)
+  elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
+    set(LIB_LINK_PATH ${LIB_PATH}/android/lib/arm64-v8a)
+  endif()
+
+else()
+  # Linux
+  set(LIB_INC_PATH ${LIB_PATH}/linux/include)
+  if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
+    set(LIB_LINK_PATH ${LIB_PATH}/linux/lib/x86_64)
+  elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
+    set(LIB_LINK_PATH ${LIB_PATH}/linux/lib/arm64)
+  endif()
+endif()
+
+message(STATUS "CMAKE_TOOLCHAIN_FILE: ${CMAKE_TOOLCHAIN_FILE}")
+message(STATUS "CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
+message(STATUS "CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
+message(STATUS "CMAKE_C_COMPILER_ID: ${CMAKE_C_COMPILER_ID}")
+message(STATUS "CMAKE_CXX_COMPILER_ID: ${CMAKE_CXX_COMPILER_ID}")
+message(STATUS "CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}")
+message(STATUS "CMAKE_C_FLAGS_DEBUG: ${CMAKE_C_FLAGS_DEBUG}")
+message(STATUS "CMAKE_C_FLAGS_RELEASE: ${CMAKE_C_FLAGS_RELEASE}")
+message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+message(STATUS "CMAKE_CXX_FLAGS_DEBUG: ${CMAKE_CXX_FLAGS_DEBUG}")
+message(STATUS "CMAKE_CXX_FLAGS_RELEASE: ${CMAKE_CXX_FLAGS_RELEASE}")
+message(STATUS "CMAKE_EXE_LINKER_FLAGS: ${CMAKE_EXE_LINKER_FLAGS}")
+message(STATUS "LIBRARY_INCLUDE_DIR: ${LIBRARY_INCLUDE_DIR}")
+message(STATUS "LIBRARY_LIB_DIR: ${LIBRARY_LIB_DIR}")
